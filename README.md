@@ -137,7 +137,7 @@ HireLens-AI/
 
 ## 🌐 Live Demo
 
-**HireLens AI:** Add your Render URL here
+**HireLens AI:** https://hirelens-ai-fgl2.onrender.com/
 
 ---
 
