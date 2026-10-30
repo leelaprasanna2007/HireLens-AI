@@ -1,10 +1,8 @@
+
 import re
 
 
 def add_flag(detected_flags, concerns, category, risk, details, message, score):
-    """
-    Add a risk flag and update concerns.
-    """
     detected_flags.append({
         "category": category,
         "risk": risk,
@@ -13,109 +11,46 @@ def add_flag(detected_flags, concerns, category, risk, details, message, score):
     })
 
     concerns.append(message)
-
     return score
 
 
 def is_payment_keyword_negated(text, keyword):
     """
-    Check whether a payment keyword is explicitly negated.
+    Detect explicit negative payment statements.
 
-    Examples that should NOT be flagged:
-
-        No registration fee is required.
-        No application fee is required.
-        No training fee is required.
-        No payment is required.
-        No upfront payment.
-        Free to apply.
-        Without any fee.
-
-    Examples that SHOULD be flagged:
-
-        Pay a registration fee of ₹500.
-        Training fee of ₹2,000 is required.
-        Candidates must pay an application fee.
-        A security deposit is required.
+    Examples:
+    No application or registration fee is required.
+    No registration fee.
+    No training or processing charges.
     """
 
-    positions = []
-    start = 0
+    negative_patterns = [
+        r"\bno\s+(?:(?:registration|application|processing|joining|"
+        r"security|training|verification|documentation)\s*"
+        r"(?:,|/|\band\b|\bor\b)?\s*)+fees?\b",
 
-    while True:
-        position = text.find(keyword, start)
+        r"\bno\s+(?:(?:registration|application|processing|joining|"
+        r"security|training|verification|documentation)\s*"
+        r"(?:,|/|\band\b|\bor\b)?\s*)+charges?\b",
 
-        if position == -1:
-            break
+        r"\bno\s+fees?\b",
+        r"\bno\s+payments?\b",
+        r"\bno\s+payment\s+(?:is\s+)?required\b",
+        r"\bno\s+upfront\s+payment\b",
+        r"\bwithout\s+(?:any\s+)?fees?\b",
+        r"\bwithout\s+(?:any\s+)?payment\b",
+        r"\bfree\s+to\s+apply\b",
+        r"\bdoes\s+not\s+require\s+(?:any\s+)?fees?\b",
+        r"\bdoes\s+not\s+require\s+(?:any\s+)?payment\b",
+        r"\bdo\s+not\s+require\s+(?:any\s+)?fees?\b",
+        r"\bdo\s+not\s+require\s+(?:any\s+)?payment\b",
+        r"\bfees?\s+(?:are\s+)?not\s+required\b",
+        r"\bpayment\s+(?:is\s+)?not\s+required\b"
+    ]
 
-        positions.append(position)
-        start = position + len(keyword)
-
-    if not positions:
-        return False
-
-    for position in positions:
-
-        # Look around the keyword.
-        context_start = max(0, position - 100)
-        context_end = min(
-            len(text),
-            position + len(keyword) + 100
-        )
-
-        context = text[context_start:context_end]
-
-        # ------------------------------------------------------
-        # Explicit negative statements
-        # ------------------------------------------------------
-
-        negative_patterns = [
-
-            # No training fee
-            r"\bno\s+(?:registration|application|processing|joining|"
-            r"security|training|verification|documentation)\s+fee\b",
-
-            # No registration charge
-            r"\bno\s+(?:registration|application|processing|joining|"
-            r"security|training|verification|documentation)\s+charges?\b",
-
-            # No fee is required
-            r"\bno\s+fee\s+(?:is\s+)?required\b",
-
-            # No payment is required
-            r"\bno\s+payment\s+(?:is\s+)?required\b",
-
-            # No upfront payment
-            r"\bno\s+upfront\s+payment\b",
-
-            # Without fee/payment
-            r"\bwithout\s+(?:any\s+)?fee\b",
-            r"\bwithout\s+(?:any\s+)?payment\b",
-
-            # Free to apply
-            r"\bfree\s+to\s+apply\b",
-
-            # Does not require fee/payment
-            r"\bdoes\s+not\s+require\s+(?:any\s+)?fee\b",
-            r"\bdoes\s+not\s+require\s+(?:any\s+)?payment\b",
-
-            # Do not require fee/payment
-            r"\bdo\s+not\s+require\s+(?:any\s+)?fee\b",
-            r"\bdo\s+not\s+require\s+(?:any\s+)?payment\b",
-
-            # Fee/payment not required
-            r"\b(?:fee|payment)\s+is\s+not\s+required\b",
-            r"\b(?:fees|payments)\s+are\s+not\s+required\b",
-
-            # No fees/payments
-            r"\bno\s+fees\b",
-            r"\bno\s+payments\b"
-        ]
-
-        for pattern in negative_patterns:
-
-            if re.search(pattern, context):
-                return True
+    for pattern in negative_patterns:
+        if re.search(pattern, text, re.IGNORECASE):
+            return True
 
     return False
 
@@ -124,7 +59,7 @@ def detect_scam_patterns(text):
     """
     Detect potential job scam and job-ad verification risks.
 
-    Returns a dictionary compatible with app.py:
+    Returns:
         risk_score
         concerns
         suspicious_indicators
@@ -147,7 +82,7 @@ def detect_scam_patterns(text):
     risk_score = 0
 
     # ==========================================================
-    # 1. UPFRONT PAYMENT REQUESTS - VERY HIGH RISK
+    # 1. UPFRONT PAYMENT REQUESTS
     # ==========================================================
 
     payment_keywords = [
@@ -178,16 +113,8 @@ def detect_scam_patterns(text):
     payment_found = []
 
     for keyword in payment_keywords:
-
         if keyword not in text_lower:
             continue
-
-        # ------------------------------------------------------
-        # IMPORTANT FIX:
-        #
-        # Do not flag a payment keyword when the advertisement
-        # explicitly says that the payment/fee is NOT required.
-        # ------------------------------------------------------
 
         if is_payment_keyword_negated(text_lower, keyword):
             continue
@@ -195,7 +122,6 @@ def detect_scam_patterns(text):
         payment_found.append(keyword)
 
     if payment_found:
-
         message = (
             "The job asks candidates to pay money before employment "
             f"({', '.join(payment_found)}). This is a major warning sign. "
@@ -240,7 +166,6 @@ def detect_scam_patterns(text):
     ]
 
     if urgency_found:
-
         message = (
             "The advertisement uses urgency or pressure tactics "
             f"({', '.join(urgency_found)}). Pressure to make a quick "
@@ -249,13 +174,9 @@ def detect_scam_patterns(text):
         )
 
         risk_score = add_flag(
-            detected_flags,
-            concerns,
+            detected_flags, concerns,
             "Urgency or Pressure Tactics",
-            "Medium",
-            urgency_found,
-            message,
-            risk_score + 15
+            "Medium", urgency_found, message, risk_score + 15
         )
 
     # ==========================================================
@@ -285,7 +206,6 @@ def detect_scam_patterns(text):
     ]
 
     if promise_found:
-
         message = (
             "The advertisement makes potentially unrealistic promises "
             f"({', '.join(promise_found)}). These claims should be "
@@ -293,13 +213,9 @@ def detect_scam_patterns(text):
         )
 
         risk_score = add_flag(
-            detected_flags,
-            concerns,
+            detected_flags, concerns,
             "Unrealistic Promises",
-            "High",
-            promise_found,
-            message,
-            risk_score + 25
+            "High", promise_found, message, risk_score + 25
         )
 
     # ==========================================================
@@ -326,7 +242,6 @@ def detect_scam_patterns(text):
     ]
 
     if contact_found:
-
         message = (
             "The job relies on informal communication platforms "
             f"({', '.join(contact_found)}) instead of clearly identified "
@@ -334,13 +249,9 @@ def detect_scam_patterns(text):
         )
 
         risk_score = add_flag(
-            detected_flags,
-            concerns,
+            detected_flags, concerns,
             "Suspicious Contact Method",
-            "Medium",
-            contact_found,
-            message,
-            risk_score + 15
+            "Medium", contact_found, message, risk_score + 15
         )
 
     # ==========================================================
@@ -365,7 +276,6 @@ def detect_scam_patterns(text):
     ]
 
     if requirement_found:
-
         message = (
             "The job has unusually low or unclear entry requirements "
             f"({', '.join(requirement_found)}). Verify the recruitment "
@@ -373,13 +283,9 @@ def detect_scam_patterns(text):
         )
 
         risk_score = add_flag(
-            detected_flags,
-            concerns,
+            detected_flags, concerns,
             "Very Low Entry Requirements",
-            "Medium",
-            requirement_found,
-            message,
-            risk_score + 10
+            "Medium", requirement_found, message, risk_score + 10
         )
 
     # ==========================================================
@@ -406,7 +312,6 @@ def detect_scam_patterns(text):
     ]
 
     if salary_found:
-
         message = (
             "The advertisement promotes unusually high earnings "
             f"({', '.join(salary_found)}) without sufficient details "
@@ -414,13 +319,9 @@ def detect_scam_patterns(text):
         )
 
         risk_score = add_flag(
-            detected_flags,
-            concerns,
+            detected_flags, concerns,
             "Potentially Unrealistic Salary Promise",
-            "Medium",
-            salary_found,
-            message,
-            risk_score + 15
+            "Medium", salary_found, message, risk_score + 15
         )
 
     # ==========================================================
@@ -442,7 +343,6 @@ def detect_scam_patterns(text):
     ]
 
     if company_found:
-
         message = (
             "Important company information appears to be hidden or "
             f"delayed ({', '.join(company_found)}). Verify the organization "
@@ -450,13 +350,9 @@ def detect_scam_patterns(text):
         )
 
         risk_score = add_flag(
-            detected_flags,
-            concerns,
+            detected_flags, concerns,
             "Missing or Hidden Company Information",
-            "Medium",
-            company_found,
-            message,
-            risk_score + 20
+            "Medium", company_found, message, risk_score + 20
         )
 
     # ==========================================================
@@ -484,7 +380,6 @@ def detect_scam_patterns(text):
     ]
 
     if sensitive_found:
-
         message = (
             "The advertisement appears to request sensitive financial or "
             f"account information ({', '.join(sensitive_found)}). Never "
@@ -492,13 +387,9 @@ def detect_scam_patterns(text):
         )
 
         risk_score = add_flag(
-            detected_flags,
-            concerns,
+            detected_flags, concerns,
             "Sensitive Information Request",
-            "High",
-            sensitive_found,
-            message,
-            risk_score + 45
+            "High", sensitive_found, message, risk_score + 45
         )
 
     # ==========================================================
@@ -523,14 +414,12 @@ def detect_scam_patterns(text):
     suspicious_urls = []
 
     for url in urls:
-
         clean_url = url.rstrip(".,;:)]}")
 
         if any(domain in clean_url for domain in suspicious_domains):
             suspicious_urls.append(clean_url)
 
     if suspicious_urls:
-
         message = (
             "The advertisement contains a placeholder or non-verifiable "
             f"application website ({', '.join(suspicious_urls)}). This does "
@@ -539,13 +428,9 @@ def detect_scam_patterns(text):
         )
 
         risk_score = add_flag(
-            detected_flags,
-            concerns,
+            detected_flags, concerns,
             "Suspicious Application Website",
-            "High",
-            suspicious_urls,
-            message,
-            risk_score + 35
+            "High", suspicious_urls, message, risk_score + 35
         )
 
     # ==========================================================
@@ -604,61 +489,37 @@ def detect_scam_patterns(text):
 
     missing_fields = []
 
-    if not any(
-        re.search(pattern, text_lower)
-        for pattern in company_patterns
-    ):
+    if not any(re.search(p, text_lower) for p in company_patterns):
         missing_fields.append("company identity")
 
-    if not any(
-        re.search(pattern, text_lower)
-        for pattern in salary_patterns
-    ):
+    if not any(re.search(p, text_lower) for p in salary_patterns):
         missing_fields.append("salary/pay information")
 
-    if not any(
-        re.search(pattern, text_lower)
-        for pattern in location_patterns
-    ):
+    if not any(re.search(p, text_lower) for p in location_patterns):
         missing_fields.append("job location/work arrangement")
 
-    if not any(
-        re.search(pattern, text_lower)
-        for pattern in experience_patterns
-    ):
+    if not any(re.search(p, text_lower) for p in experience_patterns):
         missing_fields.append("experience/eligibility requirements")
 
-    if not any(
-        re.search(pattern, text_lower)
-        for pattern in contact_patterns
-    ):
+    if not any(re.search(p, text_lower) for p in contact_patterns):
         missing_fields.append("verifiable contact information")
 
     if len(missing_fields) >= 3:
-
         message = (
             "The advertisement provides limited information needed to "
             "verify the opportunity. Missing details include: "
             + ", ".join(missing_fields)
             + ". This does not prove the job is fraudulent, but the employer "
-              "should be verified through reliable sources before applying."
+            "should be verified through reliable sources before applying."
         )
 
-        risk = "Medium"
-
-        if len(missing_fields) >= 5:
-            risk = "High"
-
+        risk = "High" if len(missing_fields) >= 5 else "Medium"
         score_to_add = 25 if len(missing_fields) >= 5 else 18
 
         risk_score = add_flag(
-            detected_flags,
-            concerns,
+            detected_flags, concerns,
             "Insufficient Job Information",
-            risk,
-            missing_fields,
-            message,
-            risk_score + score_to_add
+            risk, missing_fields, message, risk_score + score_to_add
         )
 
     # ==========================================================
@@ -693,7 +554,6 @@ def detect_scam_patterns(text):
     ]
 
     if len(set(roles_found)) >= 4 and len(missing_fields) >= 3:
-
         message = (
             "The advertisement lists several different job roles while "
             "providing limited employer and job details. Multiple-role "
@@ -702,13 +562,9 @@ def detect_scam_patterns(text):
         )
 
         risk_score = add_flag(
-            detected_flags,
-            concerns,
+            detected_flags, concerns,
             "Generic or Broad Job Advertisement",
-            "Medium",
-            list(set(roles_found)),
-            message,
-            risk_score + 10
+            "Medium", list(set(roles_found)), message, risk_score + 10
         )
 
     # ==========================================================
@@ -716,8 +572,7 @@ def detect_scam_patterns(text):
     # ==========================================================
 
     categories = {
-        flag["category"]
-        for flag in detected_flags
+        flag["category"] for flag in detected_flags
     }
 
     verification_risk_categories = {
@@ -732,7 +587,6 @@ def detect_scam_patterns(text):
     )
 
     if verification_count >= 2 and risk_score < 50:
-
         message = (
             "Multiple verification concerns were found in the advertisement. "
             "The available information is not sufficient to confidently "
@@ -740,13 +594,9 @@ def detect_scam_patterns(text):
         )
 
         risk_score = add_flag(
-            detected_flags,
-            concerns,
+            detected_flags, concerns,
             "Multiple Verification Concerns",
-            "Medium",
-            verification_count,
-            message,
-            risk_score + 15
+            "Medium", verification_count, message, risk_score + 15
         )
 
     # ==========================================================
@@ -766,10 +616,6 @@ def detect_scam_patterns(text):
     ):
         risk_score = max(risk_score, 70)
 
-    # ==========================================================
-    # RETURN FORMAT FOR app.py
-    # ==========================================================
-
     return {
         "risk_score": risk_score,
         "concerns": concerns,
@@ -784,44 +630,20 @@ def detect_scam_patterns(text):
 
 if __name__ == "__main__":
 
-    sample = """
-    Data Analyst – Work From Home
+    test_cases = [
+        "No application or registration fee is required.",
+        "No registration fee required.",
+        "No training or processing fee is required.",
+        "Pay ₹999 registration fee.",
+        "Training fee of ₹1,500 is required."
+    ]
 
-    Company: NovaTech Solutions
-    Location: Remote
-    Salary: ₹30,000 – ₹45,000 per month
-    Experience: 0–2 years
+    for sample in test_cases:
+        result = detect_scam_patterns(sample)
 
-    We are looking for a Data Analyst to analyze business data,
-    prepare reports, create dashboards, and identify useful insights.
-
-    Requirements:
-    Basic knowledge of Excel and SQL.
-    Familiarity with Power BI or Tableau.
-    Freshers are welcome.
-
-    Application:
-    Interested candidates can apply through the company's official
-    careers portal. No registration, application, processing, or
-    training fee is required.
-
-    Benefits:
-    Flexible working hours.
-    Work from home.
-    Performance-based incentives.
-    Professional training and development opportunities.
-    """
-
-    result = detect_scam_patterns(sample)
-
-    print("\nRISK SCORE:", result["risk_score"])
-
-    print("\nCONCERNS:")
-
-    for concern in result["concerns"]:
-        print("-", concern)
-
-    print("\nDETECTED FLAGS:")
-
-    for flag in result["detected_flags"]:
-        print(flag)
+        print("\nINPUT:", sample)
+        print("RISK SCORE:", result["risk_score"])
+        print("PAYMENT FLAG:", any(
+            flag["category"] == "Upfront Payment Request"
+            for flag in result["detected_flags"]
+        ))
