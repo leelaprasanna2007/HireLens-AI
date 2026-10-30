@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,62 +8,41 @@
 
     <title>HireLens AI</title>
 
-    <!-- Main CSS -->
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
 
-    <!-- Font Awesome -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
 
-<!-- =========================================================
-     LANDING PAGE
-========================================================= -->
+<!-- LANDING PAGE -->
 
 <div id="landingPage">
 
-    <!-- NAVBAR -->
     <nav class="navbar">
 
         <div class="logo">
             <div class="logo-icon">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>
-
-            <span>
-                HireLens <b>AI</b>
-            </span>
+            <span>HireLens <b>AI</b></span>
         </div>
 
         <div class="nav-links">
-
-            <a href="#features" onclick="scrollToFeatures(); return false;">
-                Features
-            </a>
-
-            <a href="#about">
-                About
-            </a>
-
+            <a href="#features" onclick="scrollToFeatures(); return false;">Features</a>
+            <a href="#about">About</a>
         </div>
 
-        <button
-            class="get-started-btn"
-            type="button"
-            onclick="openDashboard()">
-
+        <button class="get-started-btn" type="button" onclick="openDashboard()">
             Get Started
             <i class="fa-solid fa-arrow-right"></i>
-
         </button>
 
     </nav>
 
 
-    <!-- HERO -->
     <section class="hero">
 
         <div class="hero-content">
@@ -85,70 +65,48 @@
 
             <div class="hero-buttons">
 
-                <button
-                    class="primary-btn"
-                    type="button"
-                    onclick="openDashboard()">
-
+                <button class="primary-btn" type="button" onclick="openDashboard()">
                     Start Analyzing
                     <i class="fa-solid fa-arrow-right"></i>
-
                 </button>
 
-                <button
-                    class="secondary-btn"
-                    type="button"
-                    onclick="scrollToFeatures()">
-
+                <button class="secondary-btn" type="button" onclick="scrollToFeatures()">
                     Explore Features
-
                 </button>
 
             </div>
 
 
-            <!-- MINI FEATURES -->
             <div class="mini-features">
 
                 <div class="mini-card">
-
                     <div class="mini-icon purple">
                         <i class="fa-solid fa-file-lines"></i>
                     </div>
-
                     <div>
                         <h4>Analyze Jobs</h4>
                         <p>Detect suspicious patterns</p>
                     </div>
-
                 </div>
 
-
                 <div class="mini-card">
-
                     <div class="mini-icon blue">
                         <i class="fa-solid fa-database"></i>
                     </div>
-
                     <div>
                         <h4>Extract Details</h4>
                         <p>Company, role, salary & more</p>
                     </div>
-
                 </div>
 
-
                 <div class="mini-card">
-
                     <div class="mini-icon pink">
                         <i class="fa-solid fa-chart-line"></i>
                     </div>
-
                     <div>
                         <h4>Risk Assessment</h4>
                         <p>Understand job safety</p>
                     </div>
-
                 </div>
 
             </div>
@@ -156,14 +114,12 @@
         </div>
 
 
-        <!-- HERO VISUAL -->
         <div class="hero-visual">
 
             <div class="circle circle-one"></div>
             <div class="circle circle-two"></div>
 
             <div class="robot-box">
-
                 <div class="robot-head">
                     <div class="eye"></div>
                     <div class="eye"></div>
@@ -172,33 +128,22 @@
                 <div class="robot-body">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
-
             </div>
 
-
-            <!-- FLOATING CARD -->
             <div class="floating-card risk-card">
-
                 <i class="fa-solid fa-shield-halved"></i>
-
                 <div>
                     <b>Risk Analysis</b>
                     <small>AI Detection Active</small>
                 </div>
-
             </div>
 
-
-            <!-- FLOATING CARD -->
             <div class="floating-card safe-card">
-
                 <i class="fa-solid fa-circle-check"></i>
-
                 <div>
                     <b>Stay Safe</b>
                     <small>Verify Before Applying</small>
                 </div>
-
             </div>
 
         </div>
@@ -207,69 +152,35 @@
 
 
     <!-- FEATURES -->
-    <section
-        id="features"
-        class="features-section">
 
-        <h2>
-            Powerful Job Safety Features
-        </h2>
+    <section id="features" class="features-section">
+
+        <h2>Powerful Job Safety Features</h2>
 
         <div class="features-grid">
 
             <div class="feature-card">
-
                 <i class="fa-solid fa-file-circle-check"></i>
-
                 <h3>Job Analysis</h3>
-
-                <p>
-                    Analyze job descriptions and identify
-                    suspicious indicators.
-                </p>
-
+                <p>Analyze job descriptions and identify suspicious indicators.</p>
             </div>
 
-
             <div class="feature-card">
-
                 <i class="fa-solid fa-image"></i>
-
                 <h3>Image OCR</h3>
-
-                <p>
-                    Upload job posters and extract
-                    important job information.
-                </p>
-
+                <p>Upload job posters and extract important job information.</p>
             </div>
 
-
             <div class="feature-card">
-
                 <i class="fa-solid fa-shield"></i>
-
                 <h3>Scam Detection</h3>
-
-                <p>
-                    Detect payment requests, urgency
-                    tactics and unrealistic offers.
-                </p>
-
+                <p>Detect payment requests, urgency tactics and unrealistic offers.</p>
             </div>
 
-
             <div class="feature-card">
-
                 <i class="fa-solid fa-lightbulb"></i>
-
                 <h3>Explainable AI</h3>
-
-                <p>
-                    Understand why a job was marked
-                    risky with clear evidence.
-                </p>
-
+                <p>Understand why a job was marked risky with clear evidence.</p>
             </div>
 
         </div>
@@ -278,13 +189,10 @@
 
 
     <!-- ABOUT -->
-    <section
-        id="about"
-        class="about-section">
 
-        <h2>
-            Make Safer Career Decisions
-        </h2>
+    <section id="about" class="about-section">
+
+        <h2>Make Safer Career Decisions</h2>
 
         <p>
             HireLens AI combines job information extraction,
@@ -298,219 +206,125 @@
 </div>
 
 
-<!-- =========================================================
-     DASHBOARD
-========================================================= -->
+<!-- DASHBOARD -->
 
-<div
-    id="dashboard"
-    class="hidden">
+<div id="dashboard" class="hidden">
 
 
-    <!-- =====================================================
-         LEFT SIDEBAR
-    ====================================================== -->
+    <!-- SIDEBAR -->
 
     <aside class="sidebar">
 
-        <!-- LOGO -->
         <div class="sidebar-logo">
-
             <div class="logo-icon">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>
-
-            <span>
-                HireLens <b>AI</b>
-            </span>
-
+            <span>HireLens <b>AI</b></span>
         </div>
 
 
-        <!-- SIDEBAR MENU -->
         <div class="sidebar-menu">
 
-            <a
-                href="#"
-                class="active">
-
+            <a href="#" class="active">
                 <i class="fa-solid fa-house"></i>
                 Dashboard
-
             </a>
 
-
-            <a
-                href="#analysisSection">
-
+            <a href="#analysisSection">
                 <i class="fa-solid fa-chart-column"></i>
                 Analyze Job
-
             </a>
 
-
-            <a
-                href="#"
-                onclick="openChat(); return false;">
-
+            <a href="#" onclick="openChat(); return false;">
                 <i class="fa-solid fa-robot"></i>
                 Chat with Chitti
-
             </a>
 
-
             <a href="#">
-
                 <i class="fa-solid fa-clock-rotate-left"></i>
                 History
-
             </a>
 
         </div>
 
 
-        <!-- STAY SAFE -->
         <div class="stay-safe">
-
             <i class="fa-solid fa-shield-heart"></i>
-
-            <h3>
-                Stay Safe
-            </h3>
-
-            <p>
-                Think smart before applying.
-            </p>
-
+            <h3>Stay Safe</h3>
+            <p>Think smart before applying.</p>
         </div>
 
     </aside>
 
 
-    <!-- =====================================================
-         MIDDLE WORKSPACE
-    ====================================================== -->
+    <!-- MAIN DASHBOARD -->
 
     <main class="dashboard-main">
 
-
-        <!-- HEADER -->
         <div class="dashboard-header">
 
             <div>
-
-                <small>
-                    WELCOME TO HIRELENS AI
-                </small>
-
+                <small>WELCOME TO HIRELENS AI</small>
                 <h1>
                     Analyze Jobs.
                     <span>Apply Smarter.</span>
                 </h1>
-
             </div>
 
-
             <div class="online-status">
-
                 <span class="status-dot"></span>
                 AI Online
-
             </div>
 
         </div>
 
 
         <!-- STATUS CARDS -->
+
         <div class="status-cards">
 
-
             <div class="status-card">
-
                 <div class="status-icon purple">
                     <i class="fa-solid fa-file"></i>
                 </div>
-
                 <div>
-
-                    <small>
-                        Job Analysis
-                    </small>
-
-                    <h3 id="jobAnalysisStatus">
-                        Ready
-                    </h3>
-
+                    <small>Job Analysis</small>
+                    <h3 id="jobAnalysisStatus">Ready</h3>
                 </div>
-
             </div>
 
-
             <div class="status-card">
-
                 <div class="status-icon green">
                     <i class="fa-solid fa-shield"></i>
                 </div>
-
                 <div>
-
-                    <small>
-                        Risk Detection
-                    </small>
-
-                    <h3>
-                        Active
-                    </h3>
-
+                    <small>Risk Detection</small>
+                    <h3>Active</h3>
                 </div>
-
             </div>
 
-
             <div class="status-card">
-
                 <div class="status-icon pink">
                     <i class="fa-solid fa-robot"></i>
                 </div>
-
                 <div>
-
-                    <small>
-                        Chitti AI
-                    </small>
-
-                    <h3>
-                        Online
-                    </h3>
-
+                    <small>Chitti AI</small>
+                    <h3>Online</h3>
                 </div>
-
             </div>
 
         </div>
 
 
-        <!-- =================================================
-             JOB ANALYSIS INPUT
-        ================================================== -->
+        <!-- JOB ANALYSIS -->
 
-        <section
-            id="analysisSection"
-            class="analysis-box">
-
+        <section id="analysisSection" class="analysis-box">
 
             <div class="analysis-title">
 
                 <div>
-
-                    <h2>
-                        Analyze a Job Opportunity
-                    </h2>
-
-                    <p>
-                        Paste a job description or upload a job poster.
-                    </p>
-
+                    <h2>Analyze a Job Opportunity</h2>
+                    <p>Paste a job description or upload a job poster.</p>
                 </div>
 
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
@@ -518,20 +332,14 @@
             </div>
 
 
-            <!-- JOB DESCRIPTION -->
-
             <textarea
                 id="jobDescription"
                 placeholder="Paste the job description here..."></textarea>
 
 
-            <!-- =================================================
-                 ANALYSIS STATUS
-            ================================================== -->
+            <!-- LOADING STATUS -->
 
-            <div
-                id="loadingMessage"
-                class="analysis-loading hidden">
+            <div id="loadingMessage" class="analysis-loading hidden">
 
                 <div class="loading-spinner"></div>
 
@@ -552,17 +360,11 @@
 
             <div class="analysis-actions">
 
-
-                <!-- IMAGE INPUT -->
-
                 <input
                     type="file"
                     id="jobPoster"
                     accept="image/*"
                     hidden>
-
-
-                <!-- UPLOAD BUTTON -->
 
                 <button
                     type="button"
@@ -570,13 +372,10 @@
                     class="upload-btn">
 
                     <i class="fa-solid fa-cloud-arrow-up"></i>
-
                     Upload Job Poster
 
                 </button>
 
-
-                <!-- ANALYZE BUTTON -->
 
                 <button
                     type="button"
@@ -584,7 +383,6 @@
                     class="analyze-btn">
 
                     <i class="fa-solid fa-magnifying-glass"></i>
-
                     Analyze Job
 
                 </button>
@@ -592,124 +390,78 @@
             </div>
 
 
-            <!-- SELECTED FILE -->
-
-            <p
-                id="fileName"
-                class="file-name">
-            </p>
+            <p id="fileName" class="file-name"></p>
 
         </section>
 
 
-        <!-- =================================================
-             RESULTS
-        ================================================== -->
+        <!-- ANALYSIS RESULTS -->
 
-        <div
-            id="resultSection"
-            class="hidden">
+        <div id="resultSection" class="hidden">
 
 
-            <!-- EXPLAINABLE AI -->
-
-            <section
-                class="explainable-section">
+            <section class="explainable-section">
 
                 <div class="section-heading">
-
                     <div>
-
                         <h2>
                             <i class="fa-solid fa-brain"></i>
                             Explainable AI
                         </h2>
-
-                        <p>
-                            Understand why HireLens AI made its decision.
-                        </p>
-
+                        <p>Understand why HireLens AI made its decision.</p>
                     </div>
-
                 </div>
 
-
                 <div id="explainableAI">
-
                     <p class="empty-text">
                         Analyze a job to see AI explanations and evidence.
                     </p>
-
                 </div>
 
             </section>
 
 
-            <!-- EXTRACTED JOB INFORMATION -->
-
-            <section
-                class="result-section">
+            <section class="result-section">
 
                 <div class="section-heading">
-
                     <div>
-
                         <h2>
                             <i class="fa-solid fa-briefcase"></i>
                             Extracted Job Information
                         </h2>
-
                         <p>
-                            Important information detected from the
-                            job description or poster.
+                            Important information detected from the job description or poster.
                         </p>
-
                     </div>
-
                 </div>
 
-
                 <div id="jobInformation">
-
                     <p class="empty-text">
                         Analyze a job to see extracted information.
                     </p>
-
                 </div>
 
             </section>
 
 
-            <!-- SAFETY RECOMMENDATIONS -->
-
-            <section
-                class="result-section">
+            <section class="result-section">
 
                 <div class="section-heading">
-
                     <div>
-
                         <h2>
                             <i class="fa-solid fa-shield-heart"></i>
                             Safety Recommendations
                         </h2>
-
                         <p>
-                            Practical steps to stay safe while applying
-                            for jobs.
+                            Practical steps to stay safe while applying for jobs.
                         </p>
-
                     </div>
-
                 </div>
 
-
                 <div id="recommendations">
-
                     <p class="empty-text">
                         Analyze a job to receive safety recommendations.
                     </p>
-
                 </div>
 
             </section>
@@ -717,37 +469,24 @@
         </div>
 
 
-        <!-- =================================================
-             CHITTI HELP
-        ================================================== -->
+        <!-- CHITTI HELP -->
 
         <section class="chitti-help">
 
-            <div class="chitti-icon">
-                🤖
-            </div>
+            <div class="chitti-icon">🤖</div>
 
             <div>
-
-                <h2>
-                    Need help understanding a job post?
-                </h2>
+                <h2>Need help understanding a job post?</h2>
 
                 <p>
                     Ask Chitti AI about job safety, careers,
                     interviews, skills, or scam indicators.
                 </p>
-
             </div>
 
-            <button
-                type="button"
-                onclick="openChat()">
-
+            <button type="button" onclick="openChat()">
                 Chat with Chitti
-
                 <i class="fa-solid fa-arrow-right"></i>
-
             </button>
 
         </section>
@@ -755,162 +494,89 @@
     </main>
 
 
-    <!-- =====================================================
-         RIGHT ANALYSIS PREVIEW
-    ====================================================== -->
+    <!-- RIGHT ANALYSIS PREVIEW -->
 
-    <aside
-        class="analysis-preview"
-        id="analysisPreview">
-
-
-        <!-- PREVIEW HEADER -->
+    <aside class="analysis-preview" id="analysisPreview">
 
         <div class="preview-header">
-
-            <h2>
-                Analysis Preview
-            </h2>
-
+            <h2>Analysis Preview</h2>
             <span class="status-dot"></span>
-
         </div>
 
 
-        <!-- =================================================
-             LIVE ANALYSIS STATUS
-        ================================================== -->
-
-        <div
-            id="analysisStatusCard"
-            class="analysis-status-card">
+        <div id="analysisStatusCard" class="analysis-status-card">
 
             <div class="analysis-status-icon">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
             </div>
 
             <div>
-
-                <strong id="analysisStatusTitle">
-                    READY
-                </strong>
+                <strong id="analysisStatusTitle">READY</strong>
 
                 <p id="analysisStatusMessage">
                     Enter a job description and click Analyze Job.
                 </p>
-
             </div>
 
         </div>
 
-
-        <!-- =================================================
-             RISK SCORE
-        ================================================== -->
 
         <div class="risk-score-card">
 
             <div class="score-circle">
-
-                <span id="riskScore">
-                    --
-                </span>
-
+                <span id="riskScore">--</span>
             </div>
 
-            <h2 id="riskLevel">
-                WAITING
-            </h2>
+            <h2 id="riskLevel">WAITING</h2>
 
-            <p>
-                Waiting for job analysis
-            </p>
+            <p>Waiting for job analysis</p>
 
         </div>
 
-
-        <!-- =================================================
-             RISK INDICATORS
-        ================================================== -->
 
         <div class="preview-card">
 
             <h3>
-
                 <i class="fa-solid fa-triangle-exclamation"></i>
-
                 Risk Indicators
-
             </h3>
 
-
             <div id="riskIndicators">
-
-                <p class="empty-text">
-                    No analysis yet.
-                </p>
-
+                <p class="empty-text">No analysis yet.</p>
             </div>
 
         </div>
 
 
-        <!-- =================================================
-             AI RECOMMENDATION
-        ================================================== -->
-
-        <div
-            class="preview-card recommendation-card">
+        <div class="preview-card recommendation-card">
 
             <h3>
-
                 <i class="fa-solid fa-lightbulb"></i>
-
                 AI Recommendation
-
             </h3>
 
-
             <p id="recommendation">
-
-                Analyze a job opportunity to receive
-                a personalized safety recommendation.
-
+                Analyze a job opportunity to receive a personalized safety recommendation.
             </p>
 
         </div>
 
 
-        <!-- =================================================
-             SALARY ANALYSIS
-        ================================================== -->
-
-        <div
-            class="preview-card salary-preview-card">
+        <div class="preview-card salary-preview-card">
 
             <h3>
-
                 <i class="fa-solid fa-money-bill-wave"></i>
-
                 Salary Analysis
-
             </h3>
 
-
             <p class="preview-description">
-
-                Evaluation of the offered salary
-                based on available information.
-
+                Evaluation of the offered salary based on available information.
             </p>
 
-
             <div id="salaryAnalysis">
-
                 <p class="empty-text">
                     Analyze a job to see salary analysis.
                 </p>
-
             </div>
 
         </div>
@@ -920,14 +586,9 @@
 </div>
 
 
-<!-- =========================================================
-     CHITTI CHAT MODAL
-========================================================= -->
+<!-- CHITTI CHAT MODAL -->
 
-<div
-    id="chatModal"
-    class="chat-modal hidden">
-
+<div id="chatModal" class="chat-modal hidden">
 
     <div class="chat-window">
 
@@ -938,21 +599,15 @@
 
             <div class="chitti-header-info">
 
-                <div class="chitti-avatar">
-                    🤖
-                </div>
+                <div class="chitti-avatar">🤖</div>
 
                 <div>
-
-                    <h3>
-                        Chitti AI
-                    </h3>
+                    <h3>Chitti AI</h3>
 
                     <p>
                         <span class="status-dot"></span>
                         Online
                     </p>
-
                 </div>
 
             </div>
@@ -972,27 +627,21 @@
 
         <!-- CHAT MESSAGES -->
 
-        <div
-            id="chatMessages"
-            class="chat-messages">
+        <div id="chatMessages" class="chat-messages">
 
             <div class="bot-message">
-
                 👋 Hello! Good day!
 
-                <br>
-                <br>
+                <br><br>
 
                 I'm Chitti, your AI assistant.
                 I'm here to answer your questions
                 and help you understand jobs, careers,
                 interviews, skills, and more.
 
-                <br>
-                <br>
+                <br><br>
 
                 Feel free to ask me anything!
-
             </div>
 
         </div>
@@ -1000,75 +649,36 @@
 
         <!-- CHAT INPUT -->
 
-        <div class="chat-input-area">
+        <form
+            id="chatForm"
+            class="chat-input-area"
+            onsubmit="sendChittiMessage(); return false;">
 
             <input
                 type="text"
                 id="chatInput"
-                placeholder="Ask Chitti anything...">
+                placeholder="Ask Chitti anything..."
+                autocomplete="off">
 
             <button
                 type="button"
-                id="sendBtn">
+                id="sendBtn"
+                onclick="sendChittiMessage()">
 
                 <i class="fa-solid fa-paper-plane"></i>
 
             </button>
 
-        </div>
+        </form>
 
     </div>
 
 </div>
 
 
-<!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
+<!-- JAVASCRIPT -->
 
-<script src="{{ url_for('static', filename='script.js') }}"></script>
-
-
-<!-- =========================================================
-     SIMPLE LANDING PAGE FUNCTIONS
-========================================================= -->
-
-<script>
-
-function openDashboard() {
-
-    const landingPage = document.getElementById("landingPage");
-    const dashboard = document.getElementById("dashboard");
-
-    if (landingPage) {
-        landingPage.classList.add("hidden");
-    }
-
-    if (dashboard) {
-        dashboard.classList.remove("hidden");
-    }
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-}
-
-
-function scrollToFeatures() {
-
-    const features = document.getElementById("features");
-
-    if (features) {
-
-        features.scrollIntoView({
-            behavior: "smooth"
-        });
-
-    }
-}
-
-</script>
+<script src="{{ url_for('static', filename='script.js') }}?v=3"></script>
 
 
 </body>
