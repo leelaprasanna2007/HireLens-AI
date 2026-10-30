@@ -1,265 +1,69 @@
-import easyocr
+# ============================================================
+# HIRELENS AI - LIGHTWEIGHT IMAGE OCR
+# ============================================================
+# Uses Gemini Vision instead of EasyOCR.
+# This is much lighter for Render's 512 MB free instance.
+# ============================================================
+
 import os
-import cv2
+import mimetypes
+
+from google import genai
+from google.genai import types
 
 
 # ============================================================
-# INITIALIZE EASY OCR
+# GEMINI CLIENT
 # ============================================================
 
-try:
-    reader = easyocr.Reader(
-        ['en'],
-        gpu=False,
-        verbose=False
-    )
-except Exception as error:
-    print("EasyOCR initialization error:", error)
-    reader = None
+API_KEY = os.getenv("GEMINI_API_KEY")
 
+client = None
 
-# ============================================================
-# IMAGE PREPROCESSING
-# ============================================================
-
-def preprocess_image(image_path):
-    """
-    Create a clean enlarged grayscale image for OCR.
-    """
-
-    image = cv2.imread(image_path)
-
-    if image is None:
-        return None
-
-    # --------------------------------------------------------
-    # Upscale image
-    # --------------------------------------------------------
-
-    height, width = image.shape[:2]
-
-    scale = 2
-
-    image = cv2.resize(
-        image,
-        (width * scale, height * scale),
-        interpolation=cv2.INTER_CUBIC
-    )
-
-    # --------------------------------------------------------
-    # Convert to grayscale
-    # --------------------------------------------------------
-
-    gray = cv2.cvtColor(
-        image,
-        cv2.COLOR_BGR2GRAY
-    )
-
-    # --------------------------------------------------------
-    # Improve contrast
-    # --------------------------------------------------------
-
-    gray = cv2.equalizeHist(gray)
-
-    # --------------------------------------------------------
-    # Light noise reduction
-    # --------------------------------------------------------
-
-    gray = cv2.GaussianBlur(
-        gray,
-        (3, 3),
-        0
-    )
-
-    return gray
-
-
-# ============================================================
-# SECOND PREPROCESSING METHOD
-# ============================================================
-
-def preprocess_threshold(image_path):
-
-    image = cv2.imread(image_path)
-
-    if image is None:
-        return None
-
-    height, width = image.shape[:2]
-
-    image = cv2.resize(
-        image,
-        (width * 2, height * 2),
-        interpolation=cv2.INTER_CUBIC
-    )
-
-    gray = cv2.cvtColor(
-        image,
-        cv2.COLOR_BGR2GRAY
-    )
-
-    gray = cv2.GaussianBlur(
-        gray,
-        (3, 3),
-        0
-    )
-
-    threshold = cv2.adaptiveThreshold(
-        gray,
-        255,
-        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-        cv2.THRESH_BINARY,
-        31,
-        11
-    )
-
-    return threshold
-
-
-# ============================================================
-# OCR RESULT CLEANING
-# ============================================================
-
-def clean_ocr_line(text):
-
-    if not text:
-        return ""
-
-    text = str(text)
-
-    # Remove unnecessary whitespace
-    text = " ".join(
-        text.split()
-    ).strip()
-
-    return text
-
-
-# ============================================================
-# RUN OCR ON ONE IMAGE
-# ============================================================
-
-def run_ocr(image):
-
-    if image is None:
-        return []
-
+if API_KEY:
     try:
-
-        results = reader.readtext(
-            image,
-            detail=1,
-            paragraph=False,
-            width_ths=0.7,
-            height_ths=0.5,
-            text_threshold=0.4,
-            low_text=0.2,
-            link_threshold=0.3,
-            mag_ratio=1.0
-        )
-
+        client = genai.Client(api_key=API_KEY)
+        print("Gemini OCR client initialized successfully.")
     except Exception as error:
-
-        print("OCR pass error:", error)
-
-        return []
-
-    detected = []
-
-    for result in results:
-
-        if len(result) < 3:
-            continue
-
-        bbox = result[0]
-        text = clean_ocr_line(result[1])
-
-        try:
-            confidence = float(result[2])
-        except (ValueError, TypeError):
-            continue
-
-        if not text:
-            continue
-
-        # ----------------------------------------------------
-        # Keep useful detections
-        # ----------------------------------------------------
-
-        if confidence >= 0.15:
-
-            detected.append({
-                "text": text,
-                "confidence": confidence,
-                "bbox": bbox
-            })
-
-    return detected
+        print("Gemini OCR initialization error:", error)
+else:
+    print("GEMINI_API_KEY not found.")
 
 
 # ============================================================
-# SORT OCR RESULTS
+# IMAGE MIME TYPE
 # ============================================================
 
-def sort_ocr_results(results):
+def get_mime_type(image_path):
+    """
+    Detect the image MIME type.
+    """
 
-    def get_position(item):
+    mime_type, _ = mimetypes.guess_type(image_path)
 
-        bbox = item["bbox"]
+    if mime_type:
+        return mime_type
 
-        try:
-            x = min(point[0] for point in bbox)
-            y = min(point[1] for point in bbox)
+    # Fallback
+    extension = os.path.splitext(image_path)[1].lower()
 
-            return (
-                round(y / 25) * 25,
-                x
-            )
+    if extension in [".jpg", ".jpeg"]:
+        return "image/jpeg"
 
-        except Exception:
-            return (0, 0)
+    if extension == ".png":
+        return "image/png"
 
-    return sorted(
-        results,
-        key=get_position
-    )
+    if extension == ".webp":
+        return "image/webp"
 
+    if extension == ".gif":
+        return "image/gif"
 
-# ============================================================
-# REMOVE DUPLICATES
-# ============================================================
-
-def remove_duplicates(results):
-
-    final_results = []
-    seen = set()
-
-    for item in results:
-
-        text = clean_ocr_line(
-            item["text"]
-        )
-
-        if not text:
-            continue
-
-        key = text.lower()
-
-        # Exact duplicate
-        if key in seen:
-            continue
-
-        seen.add(key)
-
-        final_results.append(
-            item
-        )
-
-    return final_results
+    return "image/jpeg"
 
 
 # ============================================================
-# MAIN OCR FUNCTION
+# EXTRACT TEXT FROM IMAGE
 # ============================================================
 
 def extract_text_from_image(image_path):
@@ -267,7 +71,7 @@ def extract_text_from_image(image_path):
     try:
 
         # ----------------------------------------------------
-        # Validate image
+        # Validate image path
         # ----------------------------------------------------
 
         if not image_path:
@@ -286,110 +90,120 @@ def extract_text_from_image(image_path):
             return ""
 
         # ----------------------------------------------------
-        # Validate reader
+        # Validate Gemini client
         # ----------------------------------------------------
 
-        if reader is None:
+        if client is None:
 
             print(
-                "OCR: EasyOCR reader unavailable."
+                "OCR: Gemini client is not available."
             )
 
             return ""
 
         print("\n")
         print("=" * 70)
-        print("HIRELENS AI - OCR PROCESSING")
+        print("HIRELENS AI - GEMINI IMAGE OCR")
         print("=" * 70)
 
+        print("Reading image...")
+
         # ----------------------------------------------------
-        # PASS 1 - ORIGINAL IMAGE
+        # Read image
         # ----------------------------------------------------
 
-        print("OCR Pass 1: Original image...")
+        with open(image_path, "rb") as image_file:
 
-        original_results = run_ocr(
+            image_data = image_file.read()
+
+        if not image_data:
+
+            print("OCR: Image is empty.")
+
+            return ""
+
+        # ----------------------------------------------------
+        # Detect image type
+        # ----------------------------------------------------
+
+        mime_type = get_mime_type(
             image_path
         )
 
-        # ----------------------------------------------------
-        # PASS 2 - ENLARGED GRAYSCALE
-        # ----------------------------------------------------
-
-        print("OCR Pass 2: Enlarged grayscale image...")
-
-        processed_image = preprocess_image(
-            image_path
-        )
-
-        processed_results = run_ocr(
-            processed_image
+        print(
+            "Image type:",
+            mime_type
         )
 
         # ----------------------------------------------------
-        # PASS 3 - THRESHOLD IMAGE
+        # OCR PROMPT
         # ----------------------------------------------------
 
-        print("OCR Pass 3: Threshold image...")
+        prompt = """
+You are an OCR engine for HireLens AI.
 
-        threshold_image = preprocess_threshold(
-            image_path
-        )
+Read the job advertisement/poster image carefully.
 
-        threshold_results = run_ocr(
-            threshold_image
-        )
+Extract ALL visible text from the image.
 
-        # ----------------------------------------------------
-        # COMBINE RESULTS
-        # ----------------------------------------------------
+Important:
+- Preserve the actual wording as much as possible.
+- Do NOT invent missing information.
+- Do NOT analyze whether the job is real or fake.
+- Do NOT summarize the advertisement.
+- Do NOT add explanations.
+- Extract company name if visible.
+- Extract job role if visible.
+- Extract salary if visible.
+- Extract location if visible.
+- Extract experience requirements if visible.
+- Extract email addresses if visible.
+- Extract phone numbers if visible.
+- Extract application instructions if visible.
+- Extract payment/registration/joining/training/security-deposit information if visible.
+- Include other important job-related text.
+- If some text is unclear, make your best reading but do not create information that is not present.
 
-        all_results = (
-            original_results
-            + processed_results
-            + threshold_results
-        )
+Return ONLY the extracted text.
 
-        # ----------------------------------------------------
-        # Remove duplicates
-        # ----------------------------------------------------
-
-        all_results = remove_duplicates(
-            all_results
-        )
-
-        # ----------------------------------------------------
-        # Sort based on poster position
-        # ----------------------------------------------------
-
-        all_results = sort_ocr_results(
-            all_results
-        )
+Keep separate lines where appropriate.
+"""
 
         # ----------------------------------------------------
-        # Build final text
+        # Create Gemini image part
         # ----------------------------------------------------
 
-        extracted_lines = []
-
-        for item in all_results:
-
-            text = clean_ocr_line(
-                item["text"]
-            )
-
-            if text:
-
-                extracted_lines.append(
-                    text
-                )
-
-        extracted_text = "\n".join(
-            extracted_lines
+        image_part = types.Part.from_bytes(
+            data=image_data,
+            mime_type=mime_type
         )
 
         # ----------------------------------------------------
-        # Display OCR result in terminal
+        # Send image to Gemini
+        # ----------------------------------------------------
+
+        print("Sending image to Gemini...")
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                prompt,
+                image_part
+            ]
+        )
+
+        # ----------------------------------------------------
+        # Get response text
+        # ----------------------------------------------------
+
+        extracted_text = ""
+
+        if response and response.text:
+
+            extracted_text = response.text.strip()
+
+        # ----------------------------------------------------
+        # Display result
         # ----------------------------------------------------
 
         print("\n")
@@ -399,9 +213,7 @@ def extract_text_from_image(image_path):
 
         if extracted_text:
 
-            print(
-                extracted_text
-            )
+            print(extracted_text)
 
         else:
 
@@ -412,12 +224,12 @@ def extract_text_from_image(image_path):
         print("=" * 70)
         print("\n")
 
-        return extracted_text.strip()
+        return extracted_text
 
     except Exception as error:
 
         print(
-            "OCR Error:",
+            "Gemini OCR Error:",
             str(error)
         )
 
